@@ -90,25 +90,50 @@ function wireEvents() {
 }
 
 async function loadAll() {
-  await Promise.all([loadStats(), loadUsers(""), loadActivity()]);
+  await Promise.all([loadStats(), loadUsers(""), loadActivity(), loadTopStocks()]);
 }
 
 async function loadStats() {
   const s = await api("/stats");
-  const wrap = $("#stat-tiles");
-  wrap.innerHTML = "";
-  const tiles = [
+  const row1 = $("#stat-tiles");
+  const row2 = $("#stat-tiles-2");
+  row1.innerHTML = "";
+  row2.innerHTML = "";
+  const tiles1 = [
     { label: "Total Users", value: s.total_users, cls: "" },
     { label: "Subscribed", value: s.subscribed, cls: "good" },
     { label: "Free", value: s.free, cls: "" },
+    { label: "Active (7d)", value: s.active_7d, cls: "good" },
+  ];
+  const tiles2 = [
     { label: "Signups Today", value: s.signups_today, cls: "" },
     { label: "Signups (7d)", value: s.signups_7d, cls: "" },
     { label: "Backtests (7d)", value: s.backtests_7d, cls: "" },
   ];
-  for (const t of tiles) {
-    wrap.appendChild(el("div", { class: `stat-tile ${t.cls}` }, [
+  row2.style.gridTemplateColumns = "repeat(3, 1fr)";
+  for (const t of tiles1) {
+    row1.appendChild(el("div", { class: `stat-tile ${t.cls}` }, [
       el("div", { class: "label" }, t.label),
       el("div", { class: "value tabular" }, String(t.value)),
+    ]));
+  }
+  for (const t of tiles2) {
+    row2.appendChild(el("div", { class: `stat-tile ${t.cls}` }, [
+      el("div", { class: "label" }, t.label),
+      el("div", { class: "value tabular" }, String(t.value)),
+    ]));
+  }
+}
+
+async function loadTopStocks() {
+  const s = await api("/stats");
+  const wrap = $("#top-stocks");
+  wrap.innerHTML = "";
+  if (!s.top_stocks_7d.length) { wrap.appendChild(el("div", { class: "empty-state" }, "No stock views yet.")); return; }
+  for (const t of s.top_stocks_7d) {
+    wrap.appendChild(el("div", { class: "activity-item" }, [
+      el("span", { class: "email" }, t.ticker),
+      el("span", { class: "time" }, `${t.views} view${t.views === 1 ? "" : "s"}`),
     ]));
   }
 }
@@ -127,7 +152,7 @@ async function loadUsers(q) {
       el("td", {}, fmtDate(u.created_at)),
       el("td", { html: `<span class="status-pill ${u.subscribed ? "subscribed" : "free"}">${u.subscribed ? "Subscribed" : "Free"}</span>` }),
       el("td", {}, u.plan || "—"),
-      el("td", {}, fmtDate(u.subscribed_at)),
+      el("td", {}, fmtDateTime(u.last_active_at)),
       el("td", {}, [
         el("button", {
           class: "btn",
@@ -145,6 +170,7 @@ async function loadUsers(q) {
 const EVENT_LABELS = {
   signup: "Signup", login: "Login", subscribe: "Subscribed", unsubscribe: "Unsubscribed",
   backtest_run: "Backtest", admin_login: "Admin login", admin_toggle_subscription: "Admin action",
+  scan: "Scan", stock_view: "Stock view", tab_view: "Tab view",
 };
 
 async function loadActivity() {

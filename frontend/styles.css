@@ -369,6 +369,9 @@ button { font-family: inherit; cursor: pointer; }
 .activity-tag.unsubscribe { background: var(--warning-bg); color: var(--warning); }
 .activity-tag.backtest_run { background: rgba(144,133,233,0.16); color: var(--series-7); }
 .activity-tag.admin_login, .activity-tag.admin_toggle_subscription { background: var(--critical-bg); color: var(--critical); }
+.activity-tag.scan { background: var(--surface-3); color: var(--text-secondary); }
+.activity-tag.stock_view { background: rgba(201,133,0,0.16); color: var(--series-4); }
+.activity-tag.tab_view { background: var(--surface-3); color: var(--text-muted); }
 .activity-item .email { color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .activity-item .detail { color: var(--text-muted); }
 .activity-item .time { color: var(--text-muted); font-size: 11px; white-space: nowrap; }

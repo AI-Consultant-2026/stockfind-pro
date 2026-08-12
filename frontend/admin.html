@@ -42,27 +42,35 @@
 
 <!-- ===================== ADMIN DASHBOARD ===================== -->
 <div class="app-shell" id="view-dashboard">
-  <div class="stat-row" id="stat-tiles" style="grid-template-columns:repeat(6,1fr);margin-top:20px;">
+  <div class="stat-row" id="stat-tiles" style="grid-template-columns:repeat(4,1fr);margin-top:20px;">
     <div class="loading-row"><span class="spinner"></span> Loading stats…</div>
   </div>
+  <div class="stat-row" id="stat-tiles-2" style="grid-template-columns:repeat(4,1fr);margin-top:12px;"></div>
 
-  <div class="panel">
-    <h3 class="panel-title">Users <span class="sub">— search, plan, subscription status</span></h3>
-    <div class="filter-row">
-      <input type="text" id="user-search" class="select-field" placeholder="Search by email…" style="min-width:260px;" />
+  <div class="grid-2">
+    <div class="panel">
+      <h3 class="panel-title">Users <span class="sub">— search, plan, subscription, last active</span></h3>
+      <div class="filter-row">
+        <input type="text" id="user-search" class="select-field" placeholder="Search by email…" style="min-width:260px;" />
+      </div>
+      <div class="admin-table-wrap">
+        <table class="admin-table" id="users-table">
+          <thead>
+            <tr><th>Email</th><th>Joined</th><th>Status</th><th>Plan</th><th>Last active</th><th></th></tr>
+          </thead>
+          <tbody id="users-tbody"><tr><td colspan="6"><div class="loading-row"><span class="spinner"></span> Loading…</div></td></tr></tbody>
+        </table>
+      </div>
     </div>
-    <div class="admin-table-wrap">
-      <table class="admin-table" id="users-table">
-        <thead>
-          <tr><th>Email</th><th>Joined</th><th>Status</th><th>Plan</th><th>Subscribed since</th><th></th></tr>
-        </thead>
-        <tbody id="users-tbody"><tr><td colspan="6"><div class="loading-row"><span class="spinner"></span> Loading…</div></td></tr></tbody>
-      </table>
+
+    <div class="panel">
+      <h3 class="panel-title">Top Stocks <span class="sub">— most-viewed tickers, last 7 days</span></h3>
+      <div class="admin-activity" id="top-stocks"><div class="loading-row"><span class="spinner"></span> Loading…</div></div>
     </div>
   </div>
 
   <div class="panel">
-    <h3 class="panel-title">Activity Log <span class="sub">— signups, logins, subscriptions, backtests</span></h3>
+    <h3 class="panel-title">Activity Log <span class="sub">— signups, logins, subscriptions, scans, stock views, backtests</span></h3>
     <div class="admin-activity" id="activity-feed"><div class="loading-row"><span class="spinner"></span> Loading…</div></div>
   </div>
 </div>

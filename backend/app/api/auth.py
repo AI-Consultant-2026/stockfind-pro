@@ -42,6 +42,8 @@ def current_user():
     user_id = session.get("user_id")
     if not user_id:
         return None
+    with db_session() as conn:
+        conn.execute("UPDATE users SET last_active_at=? WHERE id=?", (_now(), user_id))
     return _user_row(user_id)
 
 

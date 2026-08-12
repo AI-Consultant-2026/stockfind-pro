@@ -85,6 +85,7 @@ def universe():
 def sectors():
     as_of = _parse_as_of()
     rows = scan_service.get_sector_rotation(as_of)
+    log_activity(flask_session.get("user_id"), "tab_view", "sector_rotation")
     return jsonify({"as_of": as_of.isoformat(), "sectors": to_jsonable(rows)})
 
 
@@ -125,6 +126,10 @@ def scan():
         "risk_warning": sum(1 for o in results if o["overall_signal"]["tier"] == "red"),
         "total_scanned": len(results),
     }
+    log_activity(
+        flask_session.get("user_id"), "scan",
+        f"mode={mode}, sector={sector or 'all'}, strategy={strategy_id or 'none'}, qualifying_only={qualifying_only}",
+    )
     return jsonify({
         "as_of": as_of.isoformat(),
         "count": len(filtered),
@@ -170,6 +175,7 @@ def stock_detail(ticker: str):
     detail = scan_service.get_stock_detail(ticker.upper(), as_of)
     if not detail:
         return jsonify({"error": f"Unknown ticker or insufficient data: {ticker}"}), 404
+    log_activity(flask_session.get("user_id"), "stock_view", ticker.upper())
     return jsonify(to_jsonable(detail))
 
 
@@ -220,6 +226,7 @@ def backtest_list():
         rows = conn.execute(
             "SELECT id, strategy_name, params_json, start_date, end_date, created_at, metrics_json FROM backtest_runs ORDER BY id DESC LIMIT 25"
         ).fetchall()
+    log_activity(flask_session.get("user_id"), "tab_view", "backtesting")
     out = []
     for r in rows:
         out.append({

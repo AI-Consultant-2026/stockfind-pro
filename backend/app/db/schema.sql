@@ -154,7 +154,8 @@ CREATE TABLE IF NOT EXISTS users (
     created_at      TEXT NOT NULL,
     subscribed      INTEGER NOT NULL DEFAULT 0,
     plan            TEXT,
-    subscribed_at   TEXT
+    subscribed_at   TEXT,
+    last_active_at  TEXT
 );
 
 -- Audit trail for the admin dashboard. user_id is null for admin-initiated

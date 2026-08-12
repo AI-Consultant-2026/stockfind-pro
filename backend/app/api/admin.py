@@ -80,6 +80,15 @@ def stats():
             "SELECT COUNT(*) AS n FROM activity_log WHERE event_type='backtest_run' AND created_at >= ?",
             (week_start,),
         ).fetchone()["n"]
+        active_7d = conn.execute(
+            "SELECT COUNT(*) AS n FROM users WHERE last_active_at >= ?", (week_start,)
+        ).fetchone()["n"]
+        top_stocks = conn.execute(
+            "SELECT detail AS ticker, COUNT(*) AS n FROM activity_log "
+            "WHERE event_type='stock_view' AND created_at >= ? "
+            "GROUP BY detail ORDER BY n DESC LIMIT 5",
+            (week_start,),
+        ).fetchall()
 
     return jsonify({
         "total_users": total_users,
@@ -89,6 +98,8 @@ def stats():
         "signups_today": signups_today,
         "signups_7d": signups_7d,
         "backtests_7d": backtests_7d,
+        "active_7d": active_7d,
+        "top_stocks_7d": [{"ticker": r["ticker"], "views": r["n"]} for r in top_stocks],
     })
 
 
@@ -99,18 +110,19 @@ def users():
     with db_session() as conn:
         if q:
             rows = conn.execute(
-                "SELECT id, email, created_at, subscribed, plan, subscribed_at FROM users "
+                "SELECT id, email, created_at, subscribed, plan, subscribed_at, last_active_at FROM users "
                 "WHERE lower(email) LIKE ? ORDER BY id DESC",
                 (f"%{q}%",),
             ).fetchall()
         else:
             rows = conn.execute(
-                "SELECT id, email, created_at, subscribed, plan, subscribed_at FROM users ORDER BY id DESC"
+                "SELECT id, email, created_at, subscribed, plan, subscribed_at, last_active_at FROM users ORDER BY id DESC"
             ).fetchall()
     return jsonify({"users": [
         {
             "id": r["id"], "email": r["email"], "created_at": r["created_at"],
             "subscribed": bool(r["subscribed"]), "plan": r["plan"], "subscribed_at": r["subscribed_at"],
+            "last_active_at": r["last_active_at"],
         }
         for r in rows
     ]})

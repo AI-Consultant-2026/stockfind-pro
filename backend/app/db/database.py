@@ -39,12 +39,22 @@ def session():
         conn.close()
 
 
+def _ensure_column(conn: sqlite3.Connection, table: str, column: str, coltype: str):
+    # schema.sql's CREATE TABLE IF NOT EXISTS won't retroactively add columns to
+    # a table that already exists on disk, so new columns need an explicit,
+    # idempotent ALTER TABLE here.
+    existing = {row["name"] for row in conn.execute(f"PRAGMA table_info({table})")}
+    if column not in existing:
+        conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {coltype}")
+
+
 def init_db(reset: bool = False):
     if reset and DB_PATH.exists():
         DB_PATH.unlink()
     conn = get_connection()
     with open(SCHEMA_PATH) as f:
         conn.executescript(f.read())
+    _ensure_column(conn, "users", "last_active_at", "TEXT")
     conn.commit()
     conn.close()
     return DB_PATH

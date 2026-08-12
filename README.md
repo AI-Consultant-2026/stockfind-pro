@@ -63,12 +63,26 @@ ADMIN_PASSWORD=some-strong-password
 
 If unset, it defaults to `admin@stockfindpro.local` / `changeme` — **set both
 env vars before deploying anywhere public.** It shows account stats (total
-users, subscribed/free split, signups today/7d, backtests run), a searchable
-user table with a Grant/Revoke button (comps or revokes a subscription without
-touching payment), and a real activity log (`activity_log` table) recording
-every signup, login, subscribe/unsubscribe, backtest run, and admin action —
-all API endpoints are under `/api/admin/*` and gated by their own
-`admin_required` session check, independent of the regular user auth.
+users, subscribed/free split, active in last 7d, signups today/7d, backtests
+run), a searchable user table with each user's last-active time and a
+Grant/Revoke button (comps or revokes a subscription without touching
+payment), a Top Stocks panel (most-viewed tickers, 7d), and a real activity
+log (`activity_log` table) recording every signup, login,
+subscribe/unsubscribe, scanner search (filters used), stock view, tab switch,
+backtest run, and admin action. All API endpoints are under `/api/admin/*`
+and gated by their own `admin_required` session check, independent of the
+regular user auth.
+
+Two things worth knowing about how this is wired:
+- `users.last_active_at` is bumped on every authenticated request
+  (`current_user()` in `backend/app/api/auth.py`), not just login — so it
+  reflects real activity, not just sign-in time.
+- New columns on an existing table (like `last_active_at`) don't come from
+  `schema.sql`'s `CREATE TABLE IF NOT EXISTS` alone — that only applies to
+  brand-new tables. `backend/app/db/database.py`'s `_ensure_column()` runs an
+  idempotent `ALTER TABLE` for these on every startup, so a schema change
+  reaches an already-seeded database (including the persistent disk in
+  production) without a manual migration step.
 
 ## What's actually implemented
 
