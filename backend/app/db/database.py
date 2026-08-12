@@ -11,6 +11,7 @@ from __future__ import annotations
 import os
 import sqlite3
 from contextlib import contextmanager
+from datetime import datetime, timezone
 from pathlib import Path
 
 # DB_DIR points at a Render persistent Disk's mount path in production (set via
@@ -47,3 +48,11 @@ def init_db(reset: bool = False):
     conn.commit()
     conn.close()
     return DB_PATH
+
+
+def log_activity(user_id: int | None, event_type: str, detail: str | None = None):
+    with session() as conn:
+        conn.execute(
+            "INSERT INTO activity_log (user_id, event_type, detail, created_at) VALUES (?, ?, ?, ?)",
+            (user_id, event_type, detail, datetime.now(timezone.utc).isoformat()),
+        )

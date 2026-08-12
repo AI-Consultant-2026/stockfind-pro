@@ -51,6 +51,25 @@ processor means replacing `POST /api/auth/subscribe` in
 `backend/app/api/auth.py` with a real Checkout session and a webhook that
 flips the same flag once payment actually clears.
 
+### Admin dashboard
+
+`/admin` is a separate, staff-only page — a distinct login from regular user
+accounts, credentials set via env vars:
+
+```bash
+ADMIN_EMAIL=you@example.com
+ADMIN_PASSWORD=some-strong-password
+```
+
+If unset, it defaults to `admin@stockfindpro.local` / `changeme` — **set both
+env vars before deploying anywhere public.** It shows account stats (total
+users, subscribed/free split, signups today/7d, backtests run), a searchable
+user table with a Grant/Revoke button (comps or revokes a subscription without
+touching payment), and a real activity log (`activity_log` table) recording
+every signup, login, subscribe/unsubscribe, backtest run, and admin action —
+all API endpoints are under `/api/admin/*` and gated by their own
+`admin_required` session check, independent of the regular user auth.
+
 ## What's actually implemented
 
 Every numbered section of the source spec has a corresponding piece of code:

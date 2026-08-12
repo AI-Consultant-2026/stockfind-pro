@@ -156,3 +156,14 @@ CREATE TABLE IF NOT EXISTS users (
     plan            TEXT,
     subscribed_at   TEXT
 );
+
+-- Audit trail for the admin dashboard. user_id is null for admin-initiated
+-- actions (e.g. an admin toggling someone's subscription is logged against
+-- the admin, not the affected user).
+CREATE TABLE IF NOT EXISTS activity_log (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id         INTEGER REFERENCES users(id),
+    event_type      TEXT NOT NULL,   -- signup | login | subscribe | unsubscribe | backtest_run | admin_login | admin_toggle_subscription
+    detail          TEXT,
+    created_at      TEXT NOT NULL
+);

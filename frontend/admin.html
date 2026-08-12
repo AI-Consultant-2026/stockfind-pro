@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>StockFind Pro — Admin</title>
+<link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-mark">STOCK<span class="accent">FIND</span> PRO</div>
+    <div class="brand-sub">Admin Dashboard</div>
+  </div>
+  <div class="topbar-right">
+    <div class="account-chip" id="account-chip" style="display:none;">
+      <span>Admin</span>
+      <button class="btn" id="admin-logout">Log out</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== ADMIN LOGIN ===================== -->
+<div class="gate-view" id="view-login">
+  <div class="gate-card">
+    <div class="brand-mark" style="text-align:center;margin-bottom:4px;">ADMIN <span class="accent">LOGIN</span></div>
+    <div class="gate-sub" style="text-align:center;">Restricted — StockFind Pro staff only</div>
+    <form id="login-form">
+      <div class="form-field">
+        <label>Email</label>
+        <input type="email" id="login-email" required autocomplete="username" />
+      </div>
+      <div class="form-field">
+        <label>Password</label>
+        <input type="password" id="login-password" required autocomplete="current-password" />
+      </div>
+      <div class="gate-error" id="login-error"></div>
+      <button type="submit" class="btn primary" id="login-submit" style="width:100%;margin-top:8px;">Log In</button>
+    </form>
+  </div>
+</div>
+
+<!-- ===================== ADMIN DASHBOARD ===================== -->
+<div class="app-shell" id="view-dashboard">
+  <div class="stat-row" id="stat-tiles" style="grid-template-columns:repeat(6,1fr);margin-top:20px;">
+    <div class="loading-row"><span class="spinner"></span> Loading stats…</div>
+  </div>
+
+  <div class="panel">
+    <h3 class="panel-title">Users <span class="sub">— search, plan, subscription status</span></h3>
+    <div class="filter-row">
+      <input type="text" id="user-search" class="select-field" placeholder="Search by email…" style="min-width:260px;" />
+    </div>
+    <div class="admin-table-wrap">
+      <table class="admin-table" id="users-table">
+        <thead>
+          <tr><th>Email</th><th>Joined</th><th>Status</th><th>Plan</th><th>Subscribed since</th><th></th></tr>
+        </thead>
+        <tbody id="users-tbody"><tr><td colspan="6"><div class="loading-row"><span class="spinner"></span> Loading…</div></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3 class="panel-title">Activity Log <span class="sub">— signups, logins, subscriptions, backtests</span></h3>
+    <div class="admin-activity" id="activity-feed"><div class="loading-row"><span class="spinner"></span> Loading…</div></div>
+  </div>
+</div>
+
+<script src="/admin.js"></script>
+</body>
+</html>

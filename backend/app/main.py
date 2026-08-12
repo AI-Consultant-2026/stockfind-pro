@@ -14,6 +14,7 @@ from pathlib import Path
 from flask import Flask, send_from_directory
 from werkzeug.middleware.proxy_fix import ProxyFix
 
+from .api.admin import admin
 from .api.auth import auth
 from .api.routes import api
 from .db.database import DB_PATH, init_db
@@ -34,10 +35,15 @@ def create_app() -> Flask:
 
     app.register_blueprint(api)
     app.register_blueprint(auth)
+    app.register_blueprint(admin)
 
     @app.get("/")
     def index():
         return send_from_directory(FRONTEND_DIR, "index.html")
+
+    @app.get("/admin")
+    def admin_page():
+        return send_from_directory(FRONTEND_DIR, "admin.html")
 
     @app.errorhandler(404)
     def not_found(e):

@@ -4,12 +4,13 @@ import json
 from datetime import date, datetime
 
 from flask import Blueprint, jsonify, request
+from flask import session as flask_session
 
 from . import scan_service
 from .auth import subscription_required
 from .util import to_jsonable
 from ..backtest.engine import run_backtest
-from ..db.database import session
+from ..db.database import log_activity, session
 from ..engines.sector_rotation import compute_sector_rotation
 from ..engines.strategies import STRATEGY_MODULES
 
@@ -207,6 +208,7 @@ def backtest():
         )
         run_id = cur.lastrowid
 
+    log_activity(flask_session.get("user_id"), "backtest_run", strategy_id or "custom_rules")
     result["id"] = run_id
     return jsonify(to_jsonable(result))
 

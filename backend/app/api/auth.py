@@ -7,6 +7,7 @@ from functools import wraps
 from flask import Blueprint, jsonify, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 
+from ..db.database import log_activity
 from ..db.database import session as db_session
 
 auth = Blueprint("auth", __name__, url_prefix="/api/auth")
@@ -87,6 +88,7 @@ def signup():
         user_id = cur.lastrowid
 
     session["user_id"] = user_id
+    log_activity(user_id, "signup")
     return jsonify({"user": _user_public(_user_row(user_id))}), 201
 
 
@@ -103,6 +105,7 @@ def login():
         return jsonify({"error": "invalid_credentials", "message": "Email or password is incorrect."}), 401
 
     session["user_id"] = row["id"]
+    log_activity(row["id"], "login")
     return jsonify({"user": _user_public(row)})
 
 
@@ -132,6 +135,7 @@ def subscribe():
             "UPDATE users SET subscribed=1, plan=?, subscribed_at=? WHERE id=?",
             (plan, _now(), user_id),
         )
+    log_activity(user_id, "subscribe", plan)
     return jsonify({"user": _user_public(_user_row(user_id))})
 
 
@@ -141,4 +145,5 @@ def unsubscribe():
     user_id = session["user_id"]
     with db_session() as conn:
         conn.execute("UPDATE users SET subscribed=0, plan=NULL, subscribed_at=NULL WHERE id=?", (user_id,))
+    log_activity(user_id, "unsubscribe")
     return jsonify({"user": _user_public(_user_row(user_id))})
