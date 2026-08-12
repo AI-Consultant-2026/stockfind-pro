@@ -8,11 +8,16 @@ thin — engines never write raw SQL themselves, they go through
 """
 from __future__ import annotations
 
+import os
 import sqlite3
 from contextlib import contextmanager
 from pathlib import Path
 
-DB_PATH = Path(__file__).resolve().parent.parent.parent / "stockfind.db"
+# DB_DIR points at a Render persistent Disk's mount path in production (set via
+# the DB_DIR env var) so the database — accounts included — survives redeploys.
+# Unset locally, so local dev keeps writing next to the backend package as before.
+DB_DIR = Path(os.environ["DB_DIR"]) if os.environ.get("DB_DIR") else Path(__file__).resolve().parent.parent.parent
+DB_PATH = DB_DIR / "stockfind.db"
 SCHEMA_PATH = Path(__file__).resolve().parent / "schema.sql"
 
 
