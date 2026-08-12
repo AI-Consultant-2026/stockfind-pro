@@ -15,10 +15,62 @@
   <div class="topbar-right">
     <span class="select-field" id="market-select">MARKET: USA</span>
     <span class="live-pill"><span class="live-dot"></span> LIVE (simulated)</span>
+    <div class="account-chip" id="account-chip" style="display:none;">
+      <span id="account-email"></span>
+      <button class="btn" id="account-logout">Log out</button>
+    </div>
   </div>
 </div>
 
-<div class="app-shell">
+<!-- ===================== AUTH GATE (logged out) ===================== -->
+<div class="gate-view" id="view-auth">
+  <div class="gate-card">
+    <div class="brand-mark" style="text-align:center;margin-bottom:4px;">STOCK<span class="accent">FIND</span> PRO</div>
+    <div class="gate-sub" style="text-align:center;">Sign in to open the scanner</div>
+    <div class="gate-tabs">
+      <button class="active" data-authmode="login" type="button">Log In</button>
+      <button data-authmode="signup" type="button">Sign Up</button>
+    </div>
+    <form id="auth-form">
+      <div class="form-field">
+        <label>Email</label>
+        <input type="email" id="auth-email" required autocomplete="email" />
+      </div>
+      <div class="form-field">
+        <label>Password</label>
+        <input type="password" id="auth-password" required autocomplete="current-password" minlength="8" />
+      </div>
+      <div class="gate-error" id="auth-error"></div>
+      <button type="submit" class="btn primary" id="auth-submit" style="width:100%;margin-top:8px;">Log In</button>
+    </form>
+  </div>
+</div>
+
+<!-- ===================== PAYWALL (logged in, not subscribed) ===================== -->
+<div class="gate-view" id="view-paywall">
+  <div class="gate-card wide">
+    <div class="gate-sub">Signed in as <strong id="paywall-email"></strong> · <a href="#" id="paywall-logout">log out</a></div>
+    <h2 class="gate-title">Subscribe to unlock the scanner</h2>
+    <p class="gate-copy">63 simulated tickers, 10 opportunity strategies, sector rotation, and unlimited point-in-time backtests.</p>
+    <div class="plan-grid">
+      <div class="plan-card">
+        <div class="plan-name">Monthly</div>
+        <div class="plan-price">$19<span>/mo</span></div>
+        <button class="btn primary" data-plan="monthly" type="button">Subscribe Monthly</button>
+      </div>
+      <div class="plan-card featured">
+        <div class="plan-badge">Save 22%</div>
+        <div class="plan-name">Annual</div>
+        <div class="plan-price">$179<span>/yr</span></div>
+        <button class="btn primary" data-plan="annual" type="button">Subscribe Annually</button>
+      </div>
+    </div>
+    <div class="gate-error" id="paywall-error"></div>
+    <p class="gate-fineprint">Demo checkout — no card required, no real charge. This flips your account to "subscribed" instantly.</p>
+  </div>
+</div>
+
+<div class="app-shell" id="view-app">
   <div class="nav-tabs">
     <button class="nav-tab active" data-view="scanner">Scanner</button>
     <button class="nav-tab" data-view="sectors">Sector Rotation</button>

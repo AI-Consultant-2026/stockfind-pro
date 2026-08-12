@@ -144,3 +144,15 @@ CREATE TABLE IF NOT EXISTS backtest_runs (
     metrics_json    TEXT NOT NULL,
     equity_curve_json TEXT NOT NULL
 );
+
+-- Accounts. Subscription is tracked directly on the user row since payment is
+-- a placeholder gateway (no external processor/webhooks to reconcile against).
+CREATE TABLE IF NOT EXISTS users (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    email           TEXT NOT NULL UNIQUE,
+    password_hash   TEXT NOT NULL,
+    created_at      TEXT NOT NULL,
+    subscribed      INTEGER NOT NULL DEFAULT 0,
+    plan            TEXT,
+    subscribed_at   TEXT
+);

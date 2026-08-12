@@ -6,6 +6,7 @@ from datetime import date, datetime
 from flask import Blueprint, jsonify, request
 
 from . import scan_service
+from .auth import subscription_required
 from .util import to_jsonable
 from ..backtest.engine import run_backtest
 from ..db.database import session
@@ -73,11 +74,13 @@ def strategies():
 
 
 @api.get("/universe")
+@subscription_required
 def universe():
     return jsonify({"companies": to_jsonable(scan_service.provider.get_universe())})
 
 
 @api.get("/sectors")
+@subscription_required
 def sectors():
     as_of = _parse_as_of()
     rows = scan_service.get_sector_rotation(as_of)
@@ -85,6 +88,7 @@ def sectors():
 
 
 @api.get("/scan")
+@subscription_required
 def scan():
     as_of = _parse_as_of()
     mode = request.args.get("mode", "all")
@@ -129,6 +133,7 @@ def scan():
 
 
 @api.get("/radar")
+@subscription_required
 def radar():
     as_of = _parse_as_of()
     results = scan_service.get_full_scan(as_of)
@@ -158,6 +163,7 @@ def radar():
 
 
 @api.get("/stock/<ticker>")
+@subscription_required
 def stock_detail(ticker: str):
     as_of = _parse_as_of()
     detail = scan_service.get_stock_detail(ticker.upper(), as_of)
@@ -167,6 +173,7 @@ def stock_detail(ticker: str):
 
 
 @api.post("/backtest")
+@subscription_required
 def backtest():
     body = request.get_json(force=True) or {}
     try:
@@ -205,6 +212,7 @@ def backtest():
 
 
 @api.get("/backtest")
+@subscription_required
 def backtest_list():
     with session() as conn:
         rows = conn.execute(
@@ -221,6 +229,7 @@ def backtest_list():
 
 
 @api.get("/backtest/<int:run_id>")
+@subscription_required
 def backtest_get(run_id: int):
     with session() as conn:
         row = conn.execute("SELECT * FROM backtest_runs WHERE id=?", (run_id,)).fetchone()

@@ -16,6 +16,8 @@ const state = {
   universe: [],
   lastScan: null,
   btRulesMode: "strategy",
+  user: null,
+  dashboardLoaded: false,
 };
 
 // ---------------------------------------------------------------- helpers --
@@ -58,8 +60,19 @@ function tierBadgeHtml(tier, label) {
 
 async function api(path, opts) {
   const res = await fetch(API + path, opts);
-  if (!res.ok) throw new Error(`API ${path} failed: ${res.status}`);
-  return res.json();
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    if (res.status === 401 || res.status === 402) {
+      // Session expired or subscription lapsed mid-visit — re-check and swap
+      // to the right gate screen instead of leaving the dashboard half-loaded.
+      refreshAuthGate();
+    }
+    const err = new Error(body.message || `API ${path} failed: ${res.status}`);
+    err.status = res.status;
+    err.body = body;
+    throw err;
+  }
+  return body;
 }
 
 // ------------------------------------------------------------ view switch --
@@ -72,7 +85,7 @@ function switchView(view) {
 }
 
 // ------------------------------------------------------------- bootstrap --
-async function init() {
+async function initDashboard() {
   wireStaticEvents();
   const meta = await api("/strategies");
   state.strategiesMeta = meta.strategies;
@@ -340,7 +353,116 @@ function toast(msg) {
   setTimeout(() => t.remove(), 2200);
 }
 
-init();
+// -------------------------------------------------------- auth / paywall --
+function showGateView(view) {
+  // view is one of: "auth", "paywall", "app"
+  $("#view-auth").classList.toggle("active", view === "auth");
+  $("#view-paywall").classList.toggle("active", view === "paywall");
+  $("#view-app").classList.toggle("active", view === "app");
+  $("#account-chip").style.display = view === "auth" ? "none" : "flex";
+}
+
+function renderAccountChip() {
+  if (!state.user) return;
+  $("#account-email").textContent = state.user.email;
+  $("#paywall-email").textContent = state.user.email;
+}
+
+async function refreshAuthGate() {
+  const data = await api("/auth/me");
+  state.user = data.user;
+  if (!state.user) {
+    showGateView("auth");
+    return;
+  }
+  renderAccountChip();
+  if (!state.user.subscribed) {
+    showGateView("paywall");
+    return;
+  }
+  showGateView("app");
+  if (!state.dashboardLoaded) {
+    state.dashboardLoaded = true;
+    await initDashboard();
+  }
+}
+
+function wireAuthEvents() {
+  let authMode = "login";
+  $all("#view-auth .gate-tabs button").forEach((b) => b.addEventListener("click", () => {
+    authMode = b.dataset.authmode;
+    $all("#view-auth .gate-tabs button").forEach((x) => x.classList.toggle("active", x === b));
+    $("#auth-submit").textContent = authMode === "login" ? "Log In" : "Sign Up";
+    $("#auth-error").textContent = "";
+  }));
+
+  $("#auth-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    $("#auth-error").textContent = "";
+    const email = $("#auth-email").value.trim();
+    const password = $("#auth-password").value;
+    const btn = $("#auth-submit");
+    btn.disabled = true;
+    try {
+      const data = await api(`/auth/${authMode}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      state.user = data.user;
+      renderAccountChip();
+      showGateView(state.user.subscribed ? "app" : "paywall");
+      if (state.user.subscribed && !state.dashboardLoaded) {
+        state.dashboardLoaded = true;
+        await initDashboard();
+      }
+    } catch (err) {
+      $("#auth-error").textContent = err.message;
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  $all("[data-plan]").forEach((b) => b.addEventListener("click", async () => {
+    $("#paywall-error").textContent = "";
+    b.disabled = true;
+    try {
+      const data = await api("/auth/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: b.dataset.plan }),
+      });
+      state.user = data.user;
+      showGateView("app");
+      if (!state.dashboardLoaded) {
+        state.dashboardLoaded = true;
+        await initDashboard();
+      }
+    } catch (err) {
+      $("#paywall-error").textContent = err.message;
+    } finally {
+      b.disabled = false;
+    }
+  }));
+
+  async function doLogout(e) {
+    if (e) e.preventDefault();
+    await api("/auth/logout", { method: "POST" });
+    state.user = null;
+    state.dashboardLoaded = false;
+    $("#auth-form").reset();
+    showGateView("auth");
+  }
+  $("#account-logout").addEventListener("click", doLogout);
+  $("#paywall-logout").addEventListener("click", doLogout);
+}
+
+async function bootstrap() {
+  wireAuthEvents();
+  await refreshAuthGate();
+}
+
+bootstrap();
 
 // ---------------------------------------------------------- stock modal ---
 let modalState = { detail: null, activeStrategy: null };

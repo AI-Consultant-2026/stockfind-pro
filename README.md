@@ -32,7 +32,24 @@ Open `http://localhost:8000`. That's the whole setup — no external services, n
 API keys, no database server (SQLite file, generated in place).
 
 Re-run `python -m app.seed` any time to regenerate the simulated universe with a
-fresh (seeded, so reproducible) random draw.
+fresh (seeded, so reproducible) random draw. Note `app.seed` resets the whole
+database, including any accounts you've created — re-sign-up after reseeding.
+
+### Accounts & subscription
+
+The dashboard sits behind a sign-up/log-in gate, and behind that, a "subscribe"
+paywall (`$19/mo` or `$179/yr` — placeholder plans, not tied to a real price
+list). Both the frontend gate and the API itself enforce this: every data
+endpoint (`/api/scan`, `/api/radar`, `/api/stock/*`, `/api/sectors`,
+`/api/backtest*`, `/api/universe`) requires a subscribed session, returning
+`401` if logged out or `402` if logged in but not subscribed.
+
+Payment is a **placeholder gateway** — there is no Stripe/PayPal/etc.
+integration. Clicking "Subscribe" just flips `subscribed=1` on your account row
+in SQLite; no card is ever collected and no money moves. Wiring in a real
+processor means replacing `POST /api/auth/subscribe` in
+`backend/app/api/auth.py` with a real Checkout session and a webhook that
+flips the same flag once payment actually clears.
 
 ## What's actually implemented
 
@@ -176,8 +193,12 @@ available then (defaults to the latest date in the dataset).
 - **Fair value is a simple justified-multiple heuristic** (bounded 8×–45× trailing
   EPS, scaled by the Growth/Quality scores), not a DCF — documented as such in
   `fundamental.py` so nobody mistakes it for more than it is.
-- **No auth, no persistence of a user's research list** — "Add to Research List"
-  is currently a UI affordance only.
+- **Payment is a placeholder gateway, not a real processor.** Accounts and
+  sessions are real (email/password, hashed, server-enforced); the "Subscribe"
+  button just flips a database flag. No card is ever collected.
+- **"Add to Research List" doesn't persist** — it's still a UI affordance only,
+  unrelated to the new accounts system.
+- **No password reset flow.** Signup/login/logout only.
 - Dashboard is dark-theme only (no light-mode toggle) for this pass.
 
 ## Design principle carried through the whole codebase

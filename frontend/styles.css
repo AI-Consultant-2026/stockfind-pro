@@ -56,7 +56,8 @@ button { font-family: inherit; cursor: pointer; }
 .tabular { font-variant-numeric: tabular-nums; }
 
 /* ---------- Layout shell ---------- */
-.app-shell { max-width: 1360px; margin: 0 auto; padding: 0 20px 64px; }
+.app-shell { display: none; max-width: 1360px; margin: 0 auto; padding: 0 20px 64px; }
+.app-shell.active { display: block; }
 
 .topbar {
   display: flex; align-items: center; justify-content: space-between;
@@ -298,3 +299,48 @@ button { font-family: inherit; cursor: pointer; }
 .run-history-item:hover { color: var(--text-primary); cursor: pointer; }
 
 .footer-note { text-align: center; color: var(--text-muted); font-size: 11.5px; margin-top: 30px; }
+
+/* ---------- Account chip (topbar, logged in) ---------- */
+.account-chip { display: flex; align-items: center; gap: 10px; }
+.account-chip #account-email { font-size: 12px; color: var(--text-secondary); }
+
+/* ---------- Auth gate + paywall ---------- */
+.gate-view { display: none; min-height: calc(100vh - 65px); align-items: center; justify-content: center; padding: 40px 20px; }
+.gate-view.active { display: flex; }
+.gate-card {
+  background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 32px 30px; width: 100%; max-width: 360px;
+}
+.gate-card.wide { max-width: 560px; text-align: center; }
+.gate-sub { color: var(--text-muted); font-size: 12.5px; margin-bottom: 20px; }
+.gate-sub a { color: var(--series-1); text-decoration: none; }
+.gate-sub a:hover { text-decoration: underline; }
+.gate-title { font-size: 20px; font-weight: 800; margin: 4px 0 8px; }
+.gate-copy { color: var(--text-secondary); font-size: 13px; margin: 0 0 24px; }
+.gate-fineprint { color: var(--text-muted); font-size: 11px; margin: 18px 0 0; }
+.gate-error { color: var(--critical); font-size: 12.5px; min-height: 16px; margin-top: 6px; }
+
+.gate-tabs { display: flex; gap: 8px; margin-bottom: 18px; }
+.gate-tabs button {
+  flex: 1; padding: 9px; border-radius: var(--radius-sm); background: var(--surface-2);
+  border: 1px solid var(--border); color: var(--text-secondary); font-weight: 700; font-size: 12.5px;
+}
+.gate-tabs button.active { background: var(--series-1); color: white; border-color: var(--series-1); }
+
+#auth-form .form-field { margin-bottom: 14px; }
+
+.plan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; text-align: left; margin-bottom: 4px; }
+.plan-card {
+  background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 18px; position: relative;
+}
+.plan-card.featured { border-color: var(--series-1); }
+.plan-badge {
+  position: absolute; top: -10px; right: 14px; background: var(--series-1); color: white;
+  font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 999px;
+}
+.plan-name { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 6px; }
+.plan-price { font-size: 26px; font-weight: 800; margin-bottom: 14px; }
+.plan-price span { font-size: 13px; font-weight: 600; color: var(--text-muted); }
+.plan-card .btn { width: 100%; }
+@media (max-width: 520px) { .plan-grid { grid-template-columns: 1fr; } }
