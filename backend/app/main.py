@@ -56,8 +56,10 @@ def create_app() -> Flask:
     return app
 
 
-if not DB_PATH.exists():
-    init_db(reset=True)
+# schema.sql is all CREATE TABLE IF NOT EXISTS, so running it unconditionally
+# is safe on an existing DB — it just adds any tables a newer commit introduced
+# (e.g. activity_log) without touching data already on the persistent disk.
+init_db(reset=not DB_PATH.exists())
 
 app = create_app()
 
