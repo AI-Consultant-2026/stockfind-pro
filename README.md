@@ -17,11 +17,15 @@ EDGAR later is a matter of implementing one adapter class — see
 
 ## Quick start
 
+Requires **Python 3.10+** (numpy 2.1.1 won't install on older versions).
+
 ```bash
 cd backend
+python3 -m venv venv
+source venv/bin/activate      # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-python -m app.seed          # generates stockfind.db (~10s)
-python -m app.main          # serves API + dashboard on http://localhost:8000
+python -m app.seed            # generates stockfind.db (~10s)
+python -m app.main            # serves API + dashboard on http://localhost:8000
 ```
 
 Open `http://localhost:8000`. That's the whole setup — no external services, no
