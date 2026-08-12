@@ -45,6 +45,10 @@ def create_app() -> Flask:
     def admin_page():
         return send_from_directory(FRONTEND_DIR, "admin.html")
 
+    @app.get("/glossary")
+    def glossary_page():
+        return send_from_directory(FRONTEND_DIR, "glossary.html")
+
     @app.errorhandler(404)
     def not_found(e):
         # SPA-style fallback for any non-API route

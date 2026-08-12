@@ -376,3 +376,43 @@ button { font-family: inherit; cursor: pointer; }
 .activity-item .detail { color: var(--text-muted); }
 .activity-item .time { color: var(--text-muted); font-size: 11px; white-space: nowrap; }
 @media (max-width: 700px) { .stat-row[style] { grid-template-columns: repeat(2,1fr) !important; } }
+
+/* ---------- Glossary ---------- */
+.content-page { max-width: 960px; margin: 0 auto; padding: 28px 20px 72px; }
+.glossary-intro {
+  background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 20px 22px; margin-bottom: 28px; font-size: 15px; color: var(--text-secondary); line-height: 1.6;
+}
+.glossary-intro strong { color: var(--text-primary); }
+.glossary-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
+.glossary-nav a {
+  background: var(--surface-1); border: 1px solid var(--border); color: var(--text-secondary);
+  border-radius: 999px; padding: 7px 14px; font-size: 12.5px; font-weight: 600; text-decoration: none;
+}
+.glossary-nav a:hover { border-color: var(--border-strong); color: var(--text-primary); }
+.glossary-section { margin-bottom: 40px; scroll-margin-top: 20px; }
+.glossary-section-title {
+  font-size: 20px; font-weight: 800; margin: 0 0 4px; display: flex; align-items: center; gap: 10px;
+}
+.glossary-section-sub { color: var(--text-muted); font-size: 13px; margin: 0 0 16px; }
+.glossary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 720px) { .glossary-grid { grid-template-columns: 1fr; } }
+.glossary-term {
+  background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 14px 16px;
+}
+.glossary-term .term {
+  font-weight: 800; font-size: 14.5px; color: var(--series-1); margin-bottom: 6px;
+  display: flex; align-items: baseline; gap: 8px;
+}
+.glossary-term .term .ticker-example { font-size: 11px; font-weight: 600; color: var(--text-muted); }
+.glossary-term .def { color: var(--text-secondary); font-size: 13px; line-height: 1.55; }
+.glossary-term .analogy {
+  margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border);
+  color: var(--text-muted); font-size: 12.5px; font-style: italic;
+}
+.glossary-back {
+  display: inline-flex; align-items: center; gap: 6px; color: var(--series-1); text-decoration: none;
+  font-size: 13px; font-weight: 600; margin-bottom: 20px;
+}
+.glossary-back:hover { text-decoration: underline; }
