@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>StockFind Pro — Opportunity Scanner</title>
+<link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-mark">STOCK<span class="accent">FIND</span> PRO</div>
+    <div class="brand-sub">Professional Opportunity Scanner</div>
+  </div>
+  <div class="topbar-right">
+    <span class="select-field" id="market-select">MARKET: USA</span>
+    <span class="live-pill"><span class="live-dot"></span> LIVE (simulated)</span>
+  </div>
+</div>
+
+<div class="app-shell">
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-view="scanner">Scanner</button>
+    <button class="nav-tab" data-view="sectors">Sector Rotation</button>
+    <button class="nav-tab" data-view="backtest">Backtesting</button>
+  </div>
+
+  <!-- ===================== SCANNER VIEW ===================== -->
+  <div class="view active" id="view-scanner">
+    <div class="note-banner" id="asof-banner"></div>
+
+    <div class="filter-row">
+      <div class="mode-switch" id="mode-switch"></div>
+      <select class="select-field" id="sector-filter"><option value="">All Sectors</option></select>
+      <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary);">
+        <input type="checkbox" id="qualifying-toggle" checked /> Qualifying only
+      </label>
+      <span class="as-of-field" id="as-of-label"></span>
+    </div>
+
+    <div class="chip-row" id="strategy-chips"></div>
+
+    <div class="stat-row" id="stat-tiles"></div>
+
+    <div class="grid-2">
+      <div class="panel" id="hero-panel">
+        <h3 class="panel-title">🏆 Top Opportunity</h3>
+        <div id="hero-content"><div class="loading-row"><span class="spinner"></span> Scanning market…</div></div>
+      </div>
+      <div class="panel">
+        <h3 class="panel-title">📡 Opportunity Radar <span class="sub">— new / notable signals</span></h3>
+        <div class="radar-feed" id="radar-feed"><div class="loading-row"><span class="spinner"></span> Loading…</div></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3 class="panel-title">Top Opportunities</h3>
+      <div class="opp-list" id="opp-list"><div class="loading-row"><span class="spinner"></span> Loading…</div></div>
+    </div>
+  </div>
+
+  <!-- ===================== SECTOR ROTATION VIEW ===================== -->
+  <div class="view" id="view-sectors">
+    <div class="panel">
+      <h3 class="panel-title">Sector Momentum <span class="sub">— Market → Sector → Industry → Stock</span></h3>
+      <div class="sector-bars" id="sector-bars"><div class="loading-row"><span class="spinner"></span> Loading…</div></div>
+    </div>
+  </div>
+
+  <!-- ===================== BACKTEST VIEW ===================== -->
+  <div class="view" id="view-backtest">
+    <div class="panel">
+      <h3 class="panel-title">Backtest a Strategy <span class="sub">— point-in-time simulation, no look-ahead bias</span></h3>
+
+      <div class="rules-toggle">
+        <button class="active" data-mode="strategy">Use a named strategy</button>
+        <button data-mode="custom">Custom rule set</button>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field" id="strategy-select-field">
+          <label>Strategy</label>
+          <select class="select-field" id="bt-strategy" style="width:100%;"></select>
+        </div>
+        <div class="form-field" id="custom-rules-summary" style="display:none;">
+          <label>Rules</label>
+          <div style="font-size:12px;color:var(--text-secondary);padding-top:8px;">ROIC &gt; 15%, EPS growth &gt; 10%, Price &gt; 200-day MA, Momentum score &gt; 60, Volume &gt; 1.0× avg</div>
+        </div>
+        <div class="form-field">
+          <label>Start date</label>
+          <input type="date" id="bt-start" value="2016-06-01" />
+        </div>
+        <div class="form-field">
+          <label>End date</label>
+          <input type="date" id="bt-end" />
+        </div>
+        <div class="form-field">
+          <label>Portfolio size (top N)</label>
+          <input type="number" id="bt-topn" value="12" min="3" max="30" />
+        </div>
+        <div class="form-field">
+          <label>Sector filter</label>
+          <select class="select-field" id="bt-sector" style="width:100%;"><option value="">All Sectors</option></select>
+        </div>
+      </div>
+
+      <button class="btn primary" id="bt-run">Run Backtest</button>
+      <span id="bt-status" style="margin-left:12px;color:var(--text-muted);font-size:12px;"></span>
+
+      <div id="bt-results" style="margin-top:20px;"></div>
+    </div>
+
+    <div class="panel">
+      <h3 class="panel-title">Recent Runs</h3>
+      <div class="run-history" id="run-history"><div class="empty-state">No backtests run yet.</div></div>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    StockFind Pro MVP — running on simulated market data (see README). Nothing here is investment advice; every
+    opportunity "meets selected criteria and deserves further investigation," not a buy call.
+  </div>
+</div>
+
+<!-- ===================== STOCK DETAIL MODAL ===================== -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" id="modal-content"></div>
+</div>
+
+<script src="/app.js"></script>
+</body>
+</html>

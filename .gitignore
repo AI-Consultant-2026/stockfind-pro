@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+backend/stockfind.db
+backend/venv/
+.DS_Store
